@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DilshodbekAi Social</title>
+    <!-- Ikonkalar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #fafafa;
+            --white: #ffffff;
+            --text-main: #262626;
+            --text-secondary: #8e8e8e;
+            --border-color: #dbdbdb;
+            --accent-color: #0095f6;
+            --danger-color: #ed4956;
+            --nav-height: 60px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: var(--nav-height); /* Pastki menyu uchun joy */
+        }
+
+        /* --- Header --- */
+        .top-nav {
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: 'cursive'; /* Instagram uslubidagi shriftga o'xshash */
+            letter-spacing: 1px;
+        }
+
+        .header-icons i {
+            font-size: 1.4rem;
+            margin-left: 20px;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        /* --- Container --- */
+        .container {
+            max-width: 600px; /* Instagram o'lchami */
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+
+        /* --- Stories --- */
+        .stories-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 20px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .stories-container::-webkit-scrollbar { display: none; } /* Chrome */
+
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+            cursor: pointer;
+        }
+
+        .story-ring {
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            margin-bottom: 5px;
+        }
+
+        .story-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            object-fit: cover;
+        }
+
+        .story-name {
+            font-size: 0.75rem;
+            color: var(--text-main);
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 70px;
+        }
+
+        /* --- Post --- */
+        .post {
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+        }
+
+        .post-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .post-username {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            background-color: #efefef;
+            min-height: 300px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+        }
+
+        .action-left i {
+            margin-right: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .action-left i:hover { transform: scale(1.1); }
+        .action-left i.liked { color: var(--danger-color); }
+
+        .post-likes {
+            padding: 0 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .post-caption {
+            padding: 0 14px 14px;
+            font-size: 0.9rem;
+        }
+        .post-caption span { font-weight: 600; margin-right: 5px; }
+
+        .post-time {
+            padding: 0 14px 14px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* --- Bottom Navigation --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-item {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .nav-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* --- Create Post Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        #preview-img {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin: 0 auto;
+        }
+
+        .post-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* --- Profile Page --- */
+        .profile-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            margin-bottom: 10px;
+        }
+        .profile-pic-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 20px;
+            object-fit: cover;
+        }
+        .profile-info h2 { font-size: 1.2rem; margin-bottom: 5px; }
+        .profile-stats { display: flex; gap: 15px; font-size: 0.9rem; margin-top: 10px; }
+        .profile-bio { font-size: 0.9rem; margin-top: 10px; }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+        .grid-item {
+            aspect-ratio: 1;
+            background: #eee;
+            cursor: pointer;
+        }
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .active-page { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="top-nav">
+        <div class="logo">DilshodbekAi</div>
+        <div class="header-icons">
+            <i class="far fa-heart"></i>
+            <i class="far fa-paper-plane"></i>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="app" class="container">
+        <!-- Bosh sahifa (Feed) -->
+        <div id="home-page" class="active-page">
+            <!-- Stories -->
+            <div class="stories-container" id="stories-wrapper">
+                <!-- JS orqali to'ldiriladi -->
+            </div>
+
+            <!-- Posts Feed -->
+            <div id="feed-wrapper">
+                <!-- JS orqali postlar tushadi -->
+            </div>
+        </div>
+
+        <!-- Profil Sahifasi -->
+        <div id="profile-page" class="hidden">
+            <div class="profile-header">
+                <img src="https://ui-avatars.com/api/?name=User&background=random" id="profile-img-display" class="profile-pic-lg">
+                <div class="profile-info">
+                    <h2 id="profile-username">user_demo</h2>
+                    <div class="profile-stats">
+                        <span><b id="posts-count">0</b> post</span>
+                        <span><b>1.2k</b> followers</span>
+                        <span><b>300</b> following</span>
+                    </div>
+                    <div class="profile-bio">DilshodbekAi foydalanuvchisi. Dasturchi va Dizayner.</div>
+                </div>
+            </div>
+            <div class="profile-grid" id="profile-grid">
+                <!-- Profil rasmlari -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div id="create-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Yangi post
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="file" id="file-input" accept="image/*" style="display:none" onchange="previewImage()">
+                <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #ccc;"></i>
+                    <p>Rasm yuklash uchun bosing</p>
+                    <img id="preview-img">
+                </div>
+                <textarea id="caption-text" class="post-input" placeholder="Izoh yozing..." rows="3"></textarea>
+                <button class="btn-primary" id="share-btn" onclick="createPost()" disabled>Ulashish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="switchPage('home')"><i class="fas fa-home"></i></div>
+        <div class="nav-item" onclick="openModal()"><i class="far fa-plus-square"></i></div>
+        <div class="nav-item" onclick="switchPage('profile')">
+            <img src="https://ui-avatars.com/api/?name=User&background=random" class="nav-avatar">
+        </div>
+    </div>
+
+    <script>
+        // --- Ma'lumotlar Bazasi (Simulyatsiya) ---
+        let currentUser = {
+            username: "dilshodbek_ai",
+            avatar: "https://ui-avatars.com/api/?name=Dilshodbek+Ai&background=0D8ABC&color=fff",
+            posts: []
+        };
+
+        const dummyStories = [
+            { name: "azizbek", img: "https://i.pravatar.cc/150?img=1" },
+            { name: "malika_design", img: "https://i.pravatar.cc/150?img=5" },
+            { name: "travel_uz", img: "https://i.pravatar.cc/150?img=8" },
+            { name: "coder_life", img: "https://i.pravatar.cc/150?img=11" },
+            { name: "food_lover", img: "https://i.pravatar.cc/150?img=12" }
+        ];
+
+        const dummyPosts = [
+            {
+                id: 1,
+                user: "travel_uz",
+                avatar: "https://i.pravatar.cc/150?img=8",
+                image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+                likes: 124,
+                caption: "O'zbekiston tabiati ajoyib! 🏔️ #uzbekistan #nature",
+                time: "2 soat oldin"
+            },
+            {
+                id: 2,
+                user: "coder_life",
+                avatar: "https://i.pravatar.cc/150?img=11",
+                image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+                likes: 89,
+                caption: "Kechasi kod yozishning o'zgacha lazzati bor 💻☕",
+                time: "5 soat oldin"
+            }
+        ];
+
+        // --- Dastur Ishga Tushganda ---
+        window.onload = function() {
+            renderStories();
+            renderFeed();
+            updateProfileUI();
+        };
+
+        // --- Funksiyalar ---
+
+        // 1. Stories chizish
+        function renderStories() {
+            const wrapper = document.getElementById('stories-wrapper');
+            let html = '';
+            dummyStories.forEach(story => {
+                html += `
+                    <div class="story">
+                        <div class="story-ring">
+                            <img src="${story.img}" class="story-img">
+                        </div>
+                        <div class="story-name">${story.name}</div>
+                    </div>
+                `;
+            });
+            // O'z storiysi
+            html = `
+                <div class="story">
+                    <div class="story-ring" style="background: none; border: 2px solid #dbdbdb;">
+                        <img src="${currentUser.avatar}" class="story-img">
+                    </div>
+                    <div class="story-name">Siz</div>
+                </div>
+            ` + html;
+            wrapper.innerHTML = html;
+        }
+
+        // 2. Postlarni chizish
+        function renderFeed() {
+            const wrapper = document.getElementById('feed-wrapper');
+            let html = '';
+            
+            // Foydalanuvchi postlari + Dummy postlar
+            const allPosts = [...currentUser.posts, ...dummyPosts];
+
+            allPosts.forEach(post => {
+                html += `
+                    <div class="post">
+                        <div class="post-header">
+                            <img src="${post.avatar}" class="post-avatar">
+                            <div class="post-username">${post.user}</div>
+                        </div>
+                        <img src="${post.image}" class="post-image" ondblclick="likePost(this)">
+                        <div class="post-actions">
+                            <div class="action-left">
+                                <i class="far fa-heart" onclick="toggleLike(this)"></i>
+                                <i class="far fa-comment"></i>
+                                <i class="far fa-paper-plane"></i>
+                            </div>
+                            <div class="action-right">
+                                <i class="far fa-bookmark"></i>
+                            </div>
+                        </div>
+                        <div class="post-likes"><span id="likes-${post.id}">${post.likes}</span> likes</div>
+                        <div class="post-caption">
+                            <span>${post.user}</span> ${post.caption}
+                        </div>
+                        <div class="post-time">${post.time}</div>
+                    </div>
+                `;
+            });
+            wrapper.innerHTML = html;
+        }
+
+        // 3. Like bosish
+        function toggleLike(icon) {
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+            icon.classList.toggle('liked');
+            
+            // Animatsiya effekti
+            if(icon.classList.contains('liked')) {
+                icon.style.transform = "scale(1.2)";
+                setTimeout(() => icon.style.transform = "scale(1)", 200);
+                
+                // Like sonini oshirish (vizual)
+                let likesSpan = icon.parentElement.parentElement.nextElementSibling.querySelector('span');
+                let count = parseInt(likesSpan.innerText);
+                likesSpan.innerText = count + 1;
+            } else {
+                let likesSpan = icon.parentElement.parentElement.nextElementSibling.querySelector('span');
+                let count = parseInt(likesSpan.innerText);
+                likesSpan.innerText = count - 1;
+            }
+        }
+
+        function likePost(imgElement) {
+            // Rasmga ikki marta bossa like bosiladi
+            let heartIcon = imgElement.nextElementSibling.querySelector('.fa-heart');
+            if (!heartIcon.classList.contains('liked')) {
+                toggleLike(heartIcon);
+            }
+        }
+
+        // 4. Sahifa o'zgartirish
+        function switchPage(pageName) {
+            const home = document.getElementById('home-page');
+            const profile = document.getElementById('profile-page');
+
+            if (pageName === 'home') {
+                home.classList.remove('hidden');
+                profile.classList.add('hidden');
+            } else if (pageName === 'profile') {
+                home.classList.add('hidden');
+                profile.classList.remove('hidden');
+                updateProfileGrid();
+            }
+        }
+
+        // 5. Post yaratish (Modal)
+        function openModal() {
+            document.getElementById('create-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('create-modal').style.display = 'none';
+            // Reset inputs
+            document.getElementById('file-input').value = '';
+            document.getElementById('preview-img').style.display = 'none';
+            document.getElementById('caption-text').value = '';
+            document.getElementById('share-btn').disabled = true;
+        }
+
+        function previewImage() {
+            const file = document.getElementById('file-input').files[0];
+            const preview = document.getElementById('preview-img');
+            const btn = document.getElementById('share-btn');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    btn.disabled = false;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function createPost() {
+            const fileInput = document.getElementById('file-input');
+            const caption = document.getElementById('caption-text').value;
+            const imgSrc = document.getElementById('preview-img').src;
+
+            if (fileInput.files.length > 0) {
+                const newPost = {
+                    id: Date.now(),
+                    user: currentUser.username,
+                    avatar: currentUser.avatar,
+                    image: imgSrc,
+                    likes: 0,
+                    caption: caption,
+                    time: "Hozirgina"
+                };
+
+                currentUser.posts.unshift(newPost); // Ro'yxat boshiga qo'shish
+                renderFeed();
+                updateProfileUI();
+                closeModal();
+                switchPage('home'); // Postdan keyin bosh sahifaga o'tish
+            }
+        }
+
+        // 6. Profilni yangilash
+        function updateProfileUI() {
+            document.getElementById('profile-username').innerText = currentUser.username;
+            document.getElementById('profile-img-display').src = currentUser.avatar;
+            document.querySelector('.nav-avatar').src = currentUser.avatar;
+            document.getElementById('posts-count').innerText = currentUser.posts.length;
+        }
+
+        function updateProfileGrid() {
+            const grid = document.getElementById('profile-grid');
+            let html = '';
+            currentUser.posts.forEach(post => {
+                html += `
+                    <div class="grid-item">
+                        <img src="${post.image}">
+                    </div>
+                `;
+            });
+            // Agar post yo'q bo'lsa
+            if(currentUser.posts.length === 0) {
+                html = '<div style="grid-column: span 3; text-align: center; padding: 20px; color: #888;">Hozircha postlar yo\'q</div>';
+            }
+            grid.innerHTML = html;
+        }
+
+        // Modal tashqarisiga bossa yopilishi uchun
+        window.onclick = function(event) {
+            const modal = document.getElementById('create-modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
